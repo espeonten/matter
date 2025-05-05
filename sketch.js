@@ -5,7 +5,9 @@
 
 //Javascript object notation: JSON
 //ASCII: American Standard Code For Information Interchange
+//API: Application Programming Interface
 
+//https://worldtimeapi.org/api/timezone/US/Pacific
 
 //namespacing
 const Engine = Matter.Engine
@@ -26,9 +28,10 @@ var log1, log2, log3, log4
 var pig1, pig2
 var slingshot
 var score = 0
+var birdstate = "onSling"
 
 function preload(){
-    backgroundImage = loadImage("sprites/bg.png")
+    bg()
 }
 
 function setup(){
@@ -60,8 +63,9 @@ function setup(){
 }
 
 function draw(){
-    console.log(bird.body)
-    background(backgroundImage)
+    if(backgroundImage){
+        background(backgroundImage)
+    }
     Engine.update(engine)
 
     ground.display()
@@ -94,16 +98,41 @@ function draw(){
 }
 
 function mouseDragged(){
-    Body.setPosition(bird.body, {'x': mouseX,'y': mouseY})
+    if(birdstate != "launched"){
+        Body.setPosition(bird.body, {'x': mouseX,'y': mouseY})
+    }
 }
 
 function mouseReleased(){
     slingshot.fly()
+    birdstate = "launched"
 }
 
 function keyPressed(){
     if(keyCode == 32 && bird.body.speed < 2){
+        bird.trajectory = []
         Body.setPosition(bird.body, {'x': width/4.3, 'y': height/1.66})
         slingshot.attach(bird.body)
+        birdstate = "onSling"
     }
+}
+
+async function bg(){
+    //backgroundImage = loadImage("sprites/bg.png")
+    //nightBackgroundImage = loadImage("sprites/night-bg.png")
+    var response = await(fetch("https://worldtimeapi.org/api/timezone/US/Pacific"))
+    //console.rlog(response)
+    var jsonResponse = await(response.json())
+    //console.log(jsonResponse)
+    var datetime = jsonResponse.datetime
+    var hour = datetime.slice(11, 13)
+    var intHour = parseInt(hour)
+    if(intHour > 5 && intHour < 22){
+        backgroundImage = loadImage("sprites/bg.png")
+    }
+    else{
+        backgroundImage = loadImage("sprites/night-bg.png")
+    }
+    //6:00 am
+    //10:00 pm
 }
