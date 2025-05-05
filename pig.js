@@ -5,7 +5,6 @@ class Pig extends Base{
         this.image = loadImage("sprites/enemy.png")
     }
     display(){
-        console.log(this.Visiblity)
         if(this.body.speed < 3){
             super.display()
         }
